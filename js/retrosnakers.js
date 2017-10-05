@@ -34,18 +34,21 @@
         this.position = 'absolute';
         this.x = 0;
         this.y = 0;
+        this._food = null;
 
         this.show = function () {
             this.x = Math.floor(Math.random() * 40);
             this.y = Math.floor(Math.random() * 20);
-            var div = document.createElement('div');
-            div.style.width = this.width + 'px';
-            div.style.height = this.height + 'px';
-            div.style.backgroundColor = this.color;
-            div.style.position = this.position;
-            div.style.left = this.x * 20 + 'px';
-            div.style.top = this.y * 20 + 'px';
-            map._map.appendChild(div);
+            if(this._food == null) {
+                this._food = document.createElement('div');
+                this._food.style.width = this.width + 'px';
+                this._food.style.height = this.height + 'px';
+                this._food.style.backgroundColor = this.color;
+                this._food.style.position = this.position;
+                map._map.appendChild(this._food);
+            }
+            this._food.style.left = this.x * 20 + 'px';
+            this._food.style.top = this.y * 20 + 'px';
         }
     }
 
@@ -67,8 +70,6 @@
                     this.body[i][3].style.height = this.height + 'px';
                     this.body[i][3].style.backgroundColor = this.body[i][2];
                     this.body[i][3].style.position = this.position;
-                    this.body[i][3].style.left = this.body[i][0] * 20 + 'px';
-                    this.body[i][3].style.top = this.body[i][1] * 20 + 'px';
                     map._map.appendChild(this.body[i][3]);
                 }
                 this.body[i][3].style.left = this.body[i][0] * 20 + 'px';
@@ -77,6 +78,11 @@
         };
 
         this.move = function () {
+            if (this.body[0][0] == food.x && this.body[0][1] == food.y) {
+                this.body.push([0, 0, 'blue', null]);
+                food.show();
+            }
+
             var length = this.body.length;
             for (var i = length - 1; i > 0; i--) {
                 this.body[i][0] = this.body[i - 1][0];
@@ -98,7 +104,7 @@
             if (this.direct == 'down') {
                 this.body[0][1] += 1;
             }
-            console.log('this is the snake ===>>', new Date());
+
             this.show();
         };
 
@@ -131,10 +137,10 @@
         setInterval(function () {
             snake.move();
         }, 200);
-        
+
         document.onkeydown = function (event) {
             var code;
-            if(window.event) {
+            if (window.event) {
                 code = window.event.keyCode;
             } else {
                 code = event.keyCode;
