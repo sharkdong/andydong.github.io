@@ -13,8 +13,8 @@
     //定义地图
     function Map(browser) {
         if (browser == 'WX') {
-            this.width = document.documentElement.clientWidth;
-            this.height = document.documentElement.clientHeight;
+            this.width = Math.floor(document.documentElement.clientWidth/50) * 50;
+            this.height = Math.floor(document.documentElement.clientHeight/50) * 50;
         } else {
             this.width = 800;
             this.height = 400;
@@ -37,8 +37,13 @@
 
     //定义 食物
     function Food(browser) {
-        this.width = 20;
-        this.height = 20;
+        if(browser == 'WX') {
+            this.width = 50;
+            this.height = 50;
+        } else {
+            this.width = 20;
+            this.height = 20;
+        }
         this.color = 'green';
         this.position = 'absolute';
         this.x = 0;
@@ -46,13 +51,8 @@
         this._food = null;
 
         this.show = function () {
-            if (browser == 'WX') {
-                this.x = Math.floor(Math.random() * (map.width - 20));
-                this.y = Math.floor(Math.random() * (map.height - 20));
-            } else {
-                this.x = Math.floor(Math.random() * 40 * 20);
-                this.y = Math.floor(Math.random() * 20 * 20);
-            }
+            this.x = Math.floor(Math.random() * Math.floor(map.width/this.width));
+            this.y = Math.floor(Math.random() * Math.floor(map.height/this.height));
             if (this._food == null) {
                 this._food = document.createElement('div');
                 this._food.style.width = this.width + 'px';
@@ -61,22 +61,27 @@
                 this._food.style.position = this.position;
                 map._map.appendChild(this._food);
             }
-            this._food.style.left = this.x + 'px';
-            this._food.style.top = this.y + 'px';
+            this._food.style.left = this.x * this.width + 'px';
+            this._food.style.top = this.y * this.height + 'px';
         }
     }
 
     // 定义 蛇
     function Snake(browser) {
-        this.width = 20;
-        this.height = 20;
+        if(browser == 'WX') {
+            this.width = 50;
+            this.height = 50;
+        } else {
+            this.width = 20;
+            this.height = 20;
+        }
         this.position = 'absolute';
         this.direct = 'right';
-        this.body = [[3, 2, 'red', null], [2, 2, 'blue', null], [1, 2, 'blue', null]];
+        this.body = [[3, 0, 'red', null], [2, 0, 'blue', null], [1, 0, 'blue', null]];
 
         this.show = function () {
             //判断是否越界
-            if (!(this.body[0][0] >= 0 && this.body[0][0] * 20 < map.width) || !(this.body[0][1] >= 0 && this.body[0][1] * 20 < map.height)) {
+            if (!(this.body[0][0] >= 0 && this.body[0][0] * this.width < map.width) || !(this.body[0][1] >= 0 && this.body[0][1] * this.height < map.height)) {
                 this.snakeFail(1);
                 return false;
             }
@@ -91,8 +96,8 @@
                     this.body[i][3].style.position = this.position;
                     map._map.appendChild(this.body[i][3]);
                 }
-                this.body[i][3].style.left = this.body[i][0] * 20 + 'px';
-                this.body[i][3].style.top = this.body[i][1] * 20 + 'px';
+                this.body[i][3].style.left = this.body[i][0] * this.width + 'px';
+                this.body[i][3].style.top = this.body[i][1] * this.height + 'px';
             }
         };
 
@@ -189,14 +194,12 @@
 
     //构建游戏
     function InitPlay(browser) {
-        if (browser == 'WX') {
-            map = new Map(browser);
-            map.show();
-            food = new Food(browser);
-            food.show();
-            snake = new Snake(browser);
-            snake.show();
-        }
+        map = new Map(browser);
+        map.show();
+        food = new Food(browser);
+        food.show();
+        snake = new Snake(browser);
+        snake.show();
         time = 200;
         num = 0;
         moveSnaker();
@@ -204,11 +207,10 @@
 
     // 定义 window.onload()
     window.onload = function () {
-        console.log(is_weixin());
         if (is_weixin()) {
             browser = 'WX';
             InitPlay(browser);
-
+            console.log('this is the width==>>', map.width, map.height);
         } else {
             InitPlay();
             document.onkeydown = function (event) {
@@ -223,6 +225,7 @@
         }
     }
 
+    //判断是否为微信
     function is_weixin() {
         var ua = navigator.userAgent.toLowerCase();
         if (ua.match(/MicroMessenger/i) == "micromessenger") {
