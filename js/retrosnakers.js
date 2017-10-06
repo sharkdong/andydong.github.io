@@ -293,4 +293,9 @@
         }
         snake.setDirect(code);
     }, false);
+
+    //禁止微信下拉更新
+    document.getElementById('container').addEventListener('touchmove', function (e) {
+        e.preventDefault();
+    });
 })()
