@@ -8,13 +8,19 @@
     var time = 200;
     var num = 0;
     var timeTaskId;
+    var browser;
 
     //定义地图
-    function Map() {
-        this.width = 800;
-        this.height = 400;
-        this.color = "#dddddd";
+    function Map(browser) {
+        if (browser == 'WX') {
+            this.width = document.documentElement.clientWidth;
+            this.height = document.documentElement.clientHeight;
+        } else {
+            this.width = 800;
+            this.height = 400;
+        }
         this.position = 'absolute';
+        this.color = "#dddddd";
         this._map = null;
 
         this.show = function () {
@@ -30,7 +36,7 @@
     }
 
     //定义 食物
-    function Food() {
+    function Food(browser) {
         this.width = 20;
         this.height = 20;
         this.color = 'green';
@@ -40,8 +46,13 @@
         this._food = null;
 
         this.show = function () {
-            this.x = Math.floor(Math.random() * 40);
-            this.y = Math.floor(Math.random() * 20);
+            if (browser == 'WX') {
+                this.x = Math.floor(Math.random() * (map.width - 20));
+                this.y = Math.floor(Math.random() * (map.height - 20));
+            } else {
+                this.x = Math.floor(Math.random() * 40 * 20);
+                this.y = Math.floor(Math.random() * 20 * 20);
+            }
             if (this._food == null) {
                 this._food = document.createElement('div');
                 this._food.style.width = this.width + 'px';
@@ -50,13 +61,13 @@
                 this._food.style.position = this.position;
                 map._map.appendChild(this._food);
             }
-            this._food.style.left = this.x * 20 + 'px';
-            this._food.style.top = this.y * 20 + 'px';
+            this._food.style.left = this.x + 'px';
+            this._food.style.top = this.y + 'px';
         }
     }
 
     // 定义 蛇
-    function Snake() {
+    function Snake(browser) {
         this.width = 20;
         this.height = 20;
         this.position = 'absolute';
@@ -177,13 +188,15 @@
     }
 
     //构建游戏
-    function InitPlay() {
-        map = new Map();
-        map.show();
-        food = new Food();
-        food.show();
-        snake = new Snake();
-        snake.show();
+    function InitPlay(browser) {
+        if (browser == 'WX') {
+            map = new Map(browser);
+            map.show();
+            food = new Food(browser);
+            food.show();
+            snake = new Snake(browser);
+            snake.show();
+        }
         time = 200;
         num = 0;
         moveSnaker();
@@ -191,15 +204,93 @@
 
     // 定义 window.onload()
     window.onload = function () {
-        InitPlay();
-        document.onkeydown = function (event) {
-            var code;
-            if (window.event) {
-                code = window.event.keyCode;
-            } else {
-                code = event.keyCode;
+        console.log(is_weixin());
+        if (is_weixin()) {
+            browser = 'WX';
+            InitPlay(browser);
+
+        } else {
+            InitPlay();
+            document.onkeydown = function (event) {
+                var code;
+                if (window.event) {
+                    code = window.event.keyCode;
+                } else {
+                    code = event.keyCode;
+                }
+                snake.setDirect(code);
             }
-            snake.setDirect(code);
         }
     }
+
+    function is_weixin() {
+        var ua = navigator.userAgent.toLowerCase();
+        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    var startx, starty;
+    //获得角度
+    function getAngle(angx, angy) {
+        return Math.atan2(angy, angx) * 180 / Math.PI;
+    };
+
+    //根据起点终点返回方向 1向上 2向下 3向左 4向右 0未滑动
+    function getDirection(startx, starty, endx, endy) {
+        var angx = endx - startx;
+        var angy = endy - starty;
+        var result = 0;
+
+        //如果滑动距离太短
+        if (Math.abs(angx) < 2 && Math.abs(angy) < 2) {
+            return result;
+        }
+
+        var angle = getAngle(angx, angy);
+        if (angle >= -135 && angle <= -45) {
+            result = 1;
+        } else if (angle > 45 && angle < 135) {
+            result = 2;
+        } else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+            result = 3;
+        } else if (angle >= -45 && angle <= 45) {
+            result = 4;
+        }
+
+        return result;
+    }
+
+    //手指接触屏幕
+    document.getElementById('container').addEventListener("touchstart", function (e) {
+        startx = e.touches[0].pageX;
+        starty = e.touches[0].pageY;
+    }, false);
+
+    //手指离开屏幕
+    document.getElementById('container').addEventListener("touchend", function (e) {
+        var endx, endy, code;
+        endx = e.changedTouches[0].pageX;
+        endy = e.changedTouches[0].pageY;
+        var direction = getDirection(startx, starty, endx, endy);
+        switch (direction) {
+            case 1:
+                code = 38;
+                break;
+            case 2:
+                code = 40;
+                break;
+            case 3:
+                code = 37;
+                break;
+            case 4:
+                code = 39;
+                break;
+            default:
+        }
+        snake.setDirect(code);
+    }, false);
 })()
