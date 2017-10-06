@@ -13,8 +13,8 @@
     //定义地图
     function Map(browser) {
         if (browser == 'WX') {
-            this.width = Math.floor(document.documentElement.clientWidth/50) * 50;
-            this.height = Math.floor(document.documentElement.clientHeight/50) * 50;
+            this.width = document.documentElement.clientWidth;
+            this.height = document.documentElement.clientHeight;
         } else {
             this.width = 800;
             this.height = 400;
@@ -38,8 +38,8 @@
     //定义 食物
     function Food(browser) {
         if(browser == 'WX') {
-            this.width = 50;
-            this.height = 50;
+            this.width = map.width/20;
+            this.height = map.height/38;
         } else {
             this.width = 20;
             this.height = 20;
@@ -69,8 +69,8 @@
     // 定义 蛇
     function Snake(browser) {
         if(browser == 'WX') {
-            this.width = 50;
-            this.height = 50;
+            this.width = map.width/20;
+            this.height = map.height/38;
         } else {
             this.width = 20;
             this.height = 20;
@@ -202,7 +202,7 @@
         snake.show();
         time = 200;
         num = 0;
-        // moveSnaker();
+        moveSnaker();
     }
 
     // 定义 window.onload()
