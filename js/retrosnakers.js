@@ -150,7 +150,7 @@
             } else if (data == 2) {
                 alert('不要命了？吃到自己了！分数为：' + num);
             }
-            InitPlay();
+            InitPlay(browser);
         }
 
         //设置蛇前进方向
@@ -202,7 +202,7 @@
         snake.show();
         time = 200;
         num = 0;
-        moveSnaker();
+        // moveSnaker();
     }
 
     // 定义 window.onload()
@@ -210,7 +210,6 @@
         if (is_weixin()) {
             browser = 'WX';
             InitPlay(browser);
-            console.log('this is the width==>>', map.width, map.height);
         } else {
             InitPlay();
             document.onkeydown = function (event) {
