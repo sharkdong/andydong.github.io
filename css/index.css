@@ -19,10 +19,20 @@ a:visited {
     background-color: white;
 }
 
-.page-center {
-    margin: auto;
-    width: 1000px;
-    height: 65vh;
+@media screen and (max-width: 2000px){
+    .page-center {
+        margin: auto;
+        width: 1000px;
+        height: 65vh;
+    }
+}
+
+@media screen and (max-width: 1000px){
+    .page-center {
+        margin: auto;
+        width: 100%;
+        height: 65vh;
+    }
 }
 
 .header-title {
