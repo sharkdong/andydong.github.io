@@ -5,6 +5,9 @@
     var map;
     var food;
     var snake;
+    var time = 200;
+    var num = 0;
+    var timeTaskId;
 
     //定义地图
     function Map() {
@@ -39,7 +42,7 @@
         this.show = function () {
             this.x = Math.floor(Math.random() * 40);
             this.y = Math.floor(Math.random() * 20);
-            if(this._food == null) {
+            if (this._food == null) {
                 this._food = document.createElement('div');
                 this._food.style.width = this.width + 'px';
                 this._food.style.height = this.height + 'px';
@@ -61,8 +64,13 @@
         this.body = [[3, 2, 'red', null], [2, 2, 'blue', null], [1, 2, 'blue', null]];
 
         this.show = function () {
-            //获取蛇节的长度
+            //判断是否越界
+            if (!(this.body[0][0] >= 0 && this.body[0][0] * 20 < map.width) || !(this.body[0][1] >= 0 && this.body[0][1] * 20 < map.height)) {
+                this.snakeFail(1);
+                return false;
+            }
             var length = this.body.length;
+            //获取蛇节的长度
             for (var i = 0; i < length; i++) {
                 if (this.body[i][3] == null) {
                     this.body[i][3] = document.createElement('div');
@@ -77,10 +85,13 @@
             }
         };
 
+        //移动蛇
         this.move = function () {
             if (this.body[0][0] == food.x && this.body[0][1] == food.y) {
                 this.body.push([0, 0, 'blue', null]);
                 food.show();
+                ++num;
+                moveSnaker();
             }
 
             var length = this.body.length;
@@ -105,39 +116,82 @@
                 this.body[0][1] += 1;
             }
 
+            //判断 头部是不是吃到了其他的位置
+            for (var j = length - 1; j > 0; j--) {
+                if (this.body[0][0] == this.body[j][0] && this.body[0][1] == this.body[j][1]) {
+                    this.snakeFail(2);
+                    return false;
+                }
+            }
+
             this.show();
         };
 
+        //游戏失败
+        this.snakeFail = function (data) {
+            if (data == 1) {
+                alert('醒醒吧！死了！！！别挣扎了。撞墙了！分数为：' + num);
+            } else if (data == 2) {
+                alert('不要命了？吃到自己了！分数为：' + num);
+            }
+            InitPlay();
+        }
+
+        //设置蛇前进方向
         this.setDirect = function (code) {
             switch (code) {
                 case 37:
-                    this.direct = 'left';
+                    if (this.direct != 'right') {
+                        this.direct = 'left';
+                    }
                     break;
                 case 38:
-                    this.direct = 'up';
+                    if (this.direct != 'down') {
+                        this.direct = 'up';
+                    }
                     break;
                 case 39:
-                    this.direct = 'right';
+                    if (this.direct != 'left') {
+                        this.direct = 'right';
+                    }
                     break;
                 case 40:
-                    this.direct = 'down';
+                    if (this.direct != 'up') {
+                        this.direct = 'down';
+                    }
                     break;
             }
         }
     }
 
-    // 定义 window.onload()
-    window.onload = function () {
+    //改变蛇移动速度
+    function moveSnaker() {
+        if (timeTaskId) {
+            clearInterval(timeTaskId);
+            time = time * 0.95;
+        }
+
+        timeTaskId = setInterval(function () {
+            snake.move();
+        }, time);
+    }
+
+    //构建游戏
+    function InitPlay() {
         map = new Map();
         map.show();
         food = new Food();
         food.show();
         snake = new Snake();
         snake.show();
-        setInterval(function () {
-            snake.move();
-        }, 200);
+        time = 200;
+        num = 0;
+        moveSnaker();
+    }
 
+    // 定义 window.onload()
+    window.onload = function () {
+        InitPlay();
         document.onkeydown = function (event) {
             var code;
             if (window.event) {
