@@ -8,7 +8,7 @@
     var blockWidth;
     var score = 0;
     var tempScore = 0;
-    var vy = 5;
+    var vy = 3;
 
     function browserRedirect() {
         var sUserAgent = navigator.userAgent.toLowerCase();
@@ -59,7 +59,7 @@
                 }
             }
             startDraw(ctx, blockWidth);
-        }, 50);
+        }, 35);
     }
 
     //清除画布
