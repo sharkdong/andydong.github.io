@@ -8,8 +8,7 @@
     var blockWidth;
     var score = 0;
     var tempScore = 0;
-    var vy = 30;
-    var timeStamps = (new Date()).getTime();
+    var vy = 5;
 
     function browserRedirect() {
         var sUserAgent = navigator.userAgent.toLowerCase();
@@ -56,11 +55,11 @@
                 if(score%10 == 0 && tempScore != score) {
                     console.log('this is score ===>>', score, tempScore, score%10);
                     tempScore = score;
-                    vy = vy + 2;
+                    vy = vy + 1;
                 }
             }
             startDraw(ctx, blockWidth);
-        }, 200);
+        }, 50);
     }
 
     //清除画布
@@ -124,8 +123,7 @@
     function playFail() {
         alert('不好意思，失败了，踩到白色的了！！！您的分数为：' + score);
         score = 0;
-        vy = 30;
-        timeStamps = (new Date()).getTime();
+        vy = 5;
         startCanvas();
     }
 
