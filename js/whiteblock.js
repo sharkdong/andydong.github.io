@@ -9,7 +9,9 @@
     var score = 0;
     var tempScore = 0;
     var vy = 8;
+    var timeTaskId;
 
+    //设备检查
     function browserRedirect() {
         var sUserAgent = navigator.userAgent.toLowerCase();
         var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
@@ -27,6 +29,7 @@
         }
     }
 
+    //设备判断
     if (browserRedirect() == 'pc') {
         var div = document.getElementById('container');
         var son = document.getElementById('play-content');
@@ -50,9 +53,9 @@
         ctx = canvas.getContext('2d');
         blocks = [[[0, 0, 'white'], [0, 0, 'white'], [0, 0, 'white'], [0, 0, 'white'], [0, 0, 'white'], [0, 0, 'white']]];
         blockWidth = canvas.width / blocks[0].length;
-        setInterval(function () {
-            if(score) {
-                if(score%10 == 0 && tempScore != score) {
+        timeTaskId = setInterval(function () {
+            if (score) {
+                if (score % 10 == 0 && tempScore != score) {
                     tempScore = score;
                     vy = vy + 1;
                 }
@@ -69,6 +72,7 @@
         ctx = canvas.getContext('2d');
     }
 
+    //开始方块
     function startDraw(ctx, blockWidth) {
         clearDraw();
         var temVy = vy;
@@ -80,7 +84,7 @@
             }
         }
         if (blocks[blocks.length - 1][0][1] >= 0) {
-            var tempBlock = [[0, -blockWidth+ temVy], [0, -blockWidth+ temVy], [0, -blockWidth+ temVy], [0, -blockWidth+ temVy], [0, -blockWidth+ temVy], [0, -blockWidth+ temVy]];
+            var tempBlock = [[0, -blockWidth + temVy], [0, -blockWidth + temVy], [0, -blockWidth + temVy], [0, -blockWidth + temVy], [0, -blockWidth + temVy], [0, -blockWidth + temVy]];
             for (var i = 0, length = tempBlock.length; i < length; i++) {
                 var tempColor = 'white';
                 if ((Math.floor(Math.random() * 100) % 4) == 3) {
@@ -119,14 +123,20 @@
         ctx.closePath();
     }
 
+    //踩白块失败
     function playFail(ret) {
-        if(ret == 1) {
+        if (ret == 1) {
             alert('不好意思，失败了，踩到白色的了！！！您的分数为：' + score);
-        } else if(ret == 2) {
+        } else if (ret == 2) {
             alert('晕死！有漏掉的！！！大兄弟。您的分数为：' + score);
         }
         score = 0;
+        tempScore = 0;
         vy = 8;
+        //停止原 自动执行器
+        if(timeTaskId || timeTaskId == 0) {
+            clearInterval(timeTaskId);
+        }
         startCanvas();
     }
 
