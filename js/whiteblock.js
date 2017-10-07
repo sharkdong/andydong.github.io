@@ -8,7 +8,7 @@
     var blockWidth;
     var score = 0;
     var tempScore = 0;
-    var vy = 3;
+    var vy = 8;
 
     function browserRedirect() {
         var sUserAgent = navigator.userAgent.toLowerCase();
@@ -126,7 +126,7 @@
             alert('晕死！有漏掉的！！！大兄弟。您的分数为：' + score);
         }
         score = 0;
-        vy = 5;
+        vy = 8;
         startCanvas();
     }
 
