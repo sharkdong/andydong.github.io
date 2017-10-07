@@ -53,7 +53,6 @@
         setInterval(function () {
             if(score) {
                 if(score%10 == 0 && tempScore != score) {
-                    console.log('this is score ===>>', score, tempScore, score%10);
                     tempScore = score;
                     vy = vy + 1;
                 }
@@ -95,7 +94,7 @@
             if (blocks[0]) {
                 for (var i = 0, alength = blocks[0].length; i < alength; i++) {
                     if (blocks[0][i][2] == 'black') {
-                        playFail();
+                        playFail(2);
                         return false;
                     }
                 }
@@ -120,8 +119,12 @@
         ctx.closePath();
     }
 
-    function playFail() {
-        alert('不好意思，失败了，踩到白色的了！！！您的分数为：' + score);
+    function playFail(ret) {
+        if(ret == 1) {
+            alert('不好意思，失败了，踩到白色的了！！！您的分数为：' + score);
+        } else if(ret == 2) {
+            alert('晕死！有漏掉的！！！大兄弟。您的分数为：' + score);
+        }
         score = 0;
         vy = 5;
         startCanvas();
@@ -139,7 +142,7 @@
                         ++score;
                     } else if (blocks[i][j][2] == 'white') {
                         blocks[i][j][2] = 'red';
-                        playFail();
+                        playFail(1);
                         return false;
                     }
                 }
